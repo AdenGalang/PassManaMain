@@ -5,17 +5,10 @@ using System.Windows.Input;
 
 namespace PassManaAlpha.Core
 {
-    /// <summary>
-    /// Owns the list of known vaults and tracks which one is active.
-    /// Injected into HomeViewModel (display) and PasswordViewModel (I/O).
-    /// </summary>
     public class VaultManagerViewModel : ForkObject
     {
         private readonly AppConfig _config;
-
         public ObservableCollection<VaultInfo> Vaults { get; } = new();
-
-        // ── Active / selected vault ──────────────────────────────────────────
         private VaultInfo? _selectedVault;
         public VaultInfo? SelectedVault
         {
@@ -24,7 +17,6 @@ namespace PassManaAlpha.Core
             {
                 if (_selectedVault == value) return;
 
-                // Clear previous selection highlight
                 if (_selectedVault != null)
                     _selectedVault.IsSelected = false;
 
@@ -38,7 +30,6 @@ namespace PassManaAlpha.Core
                 OnPropertyChanged(nameof(ActiveVaultPath));
                 OnPropertyChanged(nameof(ActiveMasterKey));
 
-                // Persist last active vault path
                 _config.LastActiveVault = _selectedVault?.FilePath;
                 _config.Save();
             }
@@ -47,8 +38,6 @@ namespace PassManaAlpha.Core
         public bool HasSelection => _selectedVault != null;
         public string? ActiveVaultPath => _selectedVault?.FilePath;
         public string? ActiveMasterKey => _selectedVault?.MasterKey;
-
-        // ── Inline key input shown when a vault is selected ──────────────────
         private string _inlineKey = string.Empty;
         public string InlineKey
         {
@@ -56,7 +45,6 @@ namespace PassManaAlpha.Core
             set { _inlineKey = value; OnPropertyChanged(); }
         }
 
-        // Called by the view's PasswordBox.PasswordChanged (can't bind directly)
         public void SetInlineKey(string key)
         {
             InlineKey = key;
@@ -65,7 +53,6 @@ namespace PassManaAlpha.Core
             OnPropertyChanged(nameof(ActiveMasterKey));
         }
 
-        // ── Commands ─────────────────────────────────────────────────────────
         public ICommand NewVaultCommand => new RelayCommand(o => CreateNewVault());
         public ICommand OpenVaultCommand => new RelayCommand(o => OpenExistingVault());
         public ICommand SelectVaultCommand => new RelayCommand(o =>
@@ -79,19 +66,26 @@ namespace PassManaAlpha.Core
                 RemoveVault(v);
         });
 
-        // ── Constructor ──────────────────────────────────────────────────────
         public VaultManagerViewModel()
         {
             _config = AppConfig.Load();
             LoadKnownVaults();
         }
+        public void LockActiveVault()
+        {
+            if (SelectedVault != null)
+            {
+                SelectedVault.MasterKey = string.Empty;
+                SelectedVault.IsUnlocked = false;
+                InlineKey = string.Empty;
+            }
+        }
 
-        // ── Private helpers ──────────────────────────────────────────────────
         private void LoadKnownVaults()
         {
             foreach (var path in _config.KnownVaults)
             {
-                if (!File.Exists(path)) continue; // skip deleted files silently
+                if (!File.Exists(path)) continue; 
                 var vi = new VaultInfo
                 {
                     Name = Path.GetFileNameWithoutExtension(path),
@@ -99,7 +93,6 @@ namespace PassManaAlpha.Core
                 };
                 Vaults.Add(vi);
 
-                // Re-select the last active vault (locked — key is never persisted)
                 if (path == _config.LastActiveVault)
                     _selectedVault = vi;
             }
@@ -127,7 +120,6 @@ namespace PassManaAlpha.Core
 
             string path = dialog.FileName;
 
-            // Create empty file if it doesn't exist yet
             if (!File.Exists(path))
                 File.WriteAllText(path, string.Empty);
 
@@ -150,7 +142,6 @@ namespace PassManaAlpha.Core
 
         private void AddOrSelectVault(string path)
         {
-            // Don't duplicate
             var existing = FindByPath(path);
             if (existing != null)
             {
@@ -174,7 +165,7 @@ namespace PassManaAlpha.Core
             SelectedVault = vi;
         }
 
-        private void RemoveVault(VaultInfo v)
+        internal void RemoveVault(VaultInfo v)
         {
             Vaults.Remove(v);
             _config.KnownVaults.Remove(v.FilePath);

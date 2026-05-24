@@ -21,9 +21,7 @@ namespace PassManaAlpha.MVVM.Model
             }
         }
 
-        // Blur radius: 0 when visible, 6 when hidden
         public double PasswordBlur => _isPasswordVisible ? 0 : 6;
-
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string? name = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));

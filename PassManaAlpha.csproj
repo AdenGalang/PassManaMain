@@ -10,6 +10,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="MVVM\Converters\**" />
+    <EmbeddedResource Remove="MVVM\Converters\**" />
+    <None Remove="MVVM\Converters\**" />
+    <Page Remove="MVVM\Converters\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="MVVM\View\PasswordView%28old%29.xaml.cs" />
   </ItemGroup>
 
@@ -34,7 +41,6 @@
 
   <ItemGroup>
     <Folder Include="Font\" />
-    <Folder Include="MVVM\Converters\" />
     <Folder Include="Services\" />
   </ItemGroup>
 
@@ -44,16 +50,21 @@
     <PackageReference Include="MahApps.Metro.IconPacks" Version="6.2.1" />
     <PackageReference Include="MaterialDesignThemes" Version="5.2.1" />
     <PackageReference Include="ModernWPF" Version="1.4.6" />
-	<Reference Include="Microsoft.VisualBasic" />
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="assets\Home.jpg" />
-    <Resource Include="assets\kazusa_r.jpg" />
+    <Resource Include="assets\Home.jpg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="assets\kazusa_r.jpg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="assets\nekoma.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="kazusa_r.jpg" />
-    <Resource Include="MVVM\View\G4WM6CEbAAAyq4R.png" />
+    <Resource Include="MVVM\View\G4WM6CEbAAAyq4R.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 </Project>

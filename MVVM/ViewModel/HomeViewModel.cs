@@ -7,11 +7,8 @@ namespace PassManaAlpha.MVVM.ViewModel
     class HomeViewModel : ForkObject
     {
         private readonly PasswordViewModel? _passwordVM;
-
         public VaultManagerViewModel VaultManager { get; }
-
         public int VaultCount => _passwordVM?.Entries.Count ?? 0;
-
         private string _currentTime = string.Empty;
         public string CurrentTime
         {
@@ -61,10 +58,8 @@ namespace PassManaAlpha.MVVM.ViewModel
             var now = DateTime.Now;
             var jc = new System.Globalization.JapaneseCalendar();
             int year = jc.GetYear(now);
-            int era = jc.GetEra(now);
-            string eraName = era == 5 ? "令和" : "平成";
-
-            CurrentDate = $"{eraName}{year}年{now.Month}月{now.Day}日";
+            
+            CurrentDate = $"{year}年{now.Month}月{now.Day}日";
             CurrentTime = $"{now.Hour}時{now.Minute:D2}分{now.Second:D2}秒";
         }
     }

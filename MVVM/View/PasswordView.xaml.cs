@@ -1,11 +1,8 @@
 ﻿using MahApps.Metro.IconPacks;
 using PassManaAlpha.MVVM.Model;
 using PassManaAlpha.MVVM.ViewModel;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -40,7 +37,6 @@ namespace PassManaAlpha.MVVM.View
             Clipboard.SetText(text);
             VM?.Log($"Copied {label} to clipboard.");
         }
-
 
         private void EntryBorder_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
@@ -123,7 +119,6 @@ namespace PassManaAlpha.MVVM.View
             }
         }
 
-
         private void EyeButton_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button btn && btn.Tag is PasswordEntry entry)
@@ -136,7 +131,6 @@ namespace PassManaAlpha.MVVM.View
             }
         }
 
-
         private void EntryBorder_MouseActivity(object sender, MouseEventArgs e)
         {
             if (sender is Border border && border.Tag is PasswordEntry entry && entry.IsPasswordVisible)
@@ -148,8 +142,6 @@ namespace PassManaAlpha.MVVM.View
             if (sender is Border border && border.Tag is PasswordEntry entry && entry.IsPasswordVisible)
                 StartOrResetTimer(entry);
         }
-
-     
 
         private void StartOrResetTimer(PasswordEntry entry)
         {
@@ -179,7 +171,6 @@ namespace PassManaAlpha.MVVM.View
                 _timers.Remove(entry);
             }
         }
-
 
         private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
         {

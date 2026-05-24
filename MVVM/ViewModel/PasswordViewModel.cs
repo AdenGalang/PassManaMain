@@ -14,23 +14,14 @@ namespace PassManaAlpha.MVVM.ViewModel
 {
     public class PasswordViewModel : ForkObject
     {
-        // ── Vault source ─────────────────────────────────────────────────────
         private readonly VaultManagerViewModel _vaultManager;
-
-        /// <summary>Active vault file path — null if no vault is selected.</summary>
         private string? VaultPath => _vaultManager.ActiveVaultPath;
-
-        /// <summary>Active vault master key — empty string if not set.</summary>
         internal string MasterKey => _vaultManager.ActiveMasterKey ?? string.Empty;
-
-        // ── Input fields ─────────────────────────────────────────────────────
         public string? InputTitle { get; set; }
         public string? InputUsername { get; set; }
         public string? InputPassword { get; set; }
-
         public Action? OnVaultLoaded { get; set; }
 
-        // ── Console log ──────────────────────────────────────────────────────
         private string? _consoleLog;
         public string? ConsoleLog
         {
@@ -41,7 +32,6 @@ namespace PassManaAlpha.MVVM.ViewModel
         public void Log(string message) =>
             ConsoleLog += $"[{DateTime.Now:HH:mm:ss}] {message}\n";
 
-        // ── Load toggle ──────────────────────────────────────────────────────
         private bool _isLoadEnabled = true;
         public bool IsLoadEnabled
         {
@@ -56,10 +46,7 @@ namespace PassManaAlpha.MVVM.ViewModel
             set { _isLoading = value; OnPropertyChanged(); }
         }
 
-        // ── Entries ──────────────────────────────────────────────────────────
         public ObservableCollection<PasswordEntry> Entries { get; set; }
-
-        // ── Search ───────────────────────────────────────────────────────────
         private string _searchQuery = string.Empty;
         public string SearchQuery
         {
@@ -73,8 +60,6 @@ namespace PassManaAlpha.MVVM.ViewModel
         }
 
         public ICollectionView FilteredEntries { get; }
-
-        // ── Constructor ──────────────────────────────────────────────────────
         public PasswordViewModel(VaultManagerViewModel vaultManager)
         {
             _vaultManager = vaultManager;
@@ -86,7 +71,6 @@ namespace PassManaAlpha.MVVM.ViewModel
                  (e.Title?.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase) ?? false) ||
                  (e.Username?.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase) ?? false));
 
-            // Clear entries when the active vault changes so stale data isn't shown
             _vaultManager.PropertyChanged += (s, e) =>
             {
                 if (e.PropertyName == nameof(VaultManagerViewModel.SelectedVault))
@@ -101,7 +85,6 @@ namespace PassManaAlpha.MVVM.ViewModel
             };
         }
 
-        // ── Commands ─────────────────────────────────────────────────────────
         public ICommand ReloadCommand => new RelayCommand(o =>
         {
             Entries.Clear();
@@ -301,30 +284,37 @@ namespace PassManaAlpha.MVVM.ViewModel
             }
         });
 
-        // ── Backup ───────────────────────────────────────────────────────────
         private static readonly string BackupFolder = "backups";
-
         internal void BackupVault()
         {
             if (VaultPath == null || !File.Exists(VaultPath)) return;
-
             Directory.CreateDirectory(BackupFolder);
             string timestamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
-            string name = Path.GetFileNameWithoutExtension(VaultPath);
-            string backupPath = Path.Combine(BackupFolder, $"{name}_{timestamp}.dat");
+            string vaultName = Path.GetFileNameWithoutExtension(VaultPath);
+            string backupPath = Path.Combine(BackupFolder, $"{vaultName}_{timestamp}.dat");
             File.Copy(VaultPath, backupPath);
 
-            var backups = Directory.GetFiles(BackupFolder, $"{name}_*.dat")
-                .OrderBy(f => f).ToList();
+            var dirInfo = new DirectoryInfo(BackupFolder);
+            var existingBackups = dirInfo.GetFiles($"{vaultName}_*.dat")
+                                         .OrderBy(f => f.CreationTime) 
+                                         .ToList();
 
-            while (backups.Count > 10)
+            while (existingBackups.Count > 10)
             {
-                File.Delete(backups[0]);
-                backups.RemoveAt(0);
+                var oldestFile = existingBackups[0];
+                try
+                {
+                    oldestFile.Delete();
+                    existingBackups.RemoveAt(0);
+                }
+                catch (IOException ex)
+                {
+                    Log($"Backup cleanup error: {ex.Message}");
+                    break;
+                }
             }
         }
 
-        // ── Helpers ──────────────────────────────────────────────────────────
         private bool CheckVaultReady()
         {
             if (VaultPath == null)

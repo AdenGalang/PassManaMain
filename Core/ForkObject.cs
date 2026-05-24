@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 namespace PassManaAlpha.Core
 {
-    public class ForkObject : INotifyPropertyChanged //
+    public class ForkObject : INotifyPropertyChanged
 
     {
         public event PropertyChangedEventHandler? PropertyChanged; //yes

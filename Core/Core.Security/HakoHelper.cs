@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
@@ -12,7 +11,7 @@ namespace PassManaAlpha.Core.Scurity
         private const byte VERSION_PBKDF2 = 0x01;
         private const byte VERSION_ARGON2ID = 0x02;
         private const int ARGON2_TIME_COST = 1;
-        private const int ARGON2_MEMORY_COST = 8192; //RAM -32bit integer-;KB = 1024 bytes
+        private const int ARGON2_MEMORY_COST = 8192; //RAM;KB = 1024 bytes * 8 MB
         private const int ARGON2_HASH_LENGTH = 64;    
 
         private static (byte[] aesKey, byte[] hmacKey) DeriveKeysArgon2(string password, byte[] salt)
@@ -49,8 +48,6 @@ namespace PassManaAlpha.Core.Scurity
             pbkdf2.GetBytes(32);
             return pbkdf2.GetBytes(32);
         }
-
-        // ─── Encrypt ─────────────────────────────────────────────────────────────
 
         public static string Encrypt(string plainText, string password)
         {
@@ -91,8 +88,6 @@ namespace PassManaAlpha.Core.Scurity
 
             return Convert.ToBase64String(final);
         }
-
-        // ─── Decrypt ─────────────────────────────────────────────────────────────
 
         public static string? Decrypt(string cipherText, string password)
         {
@@ -154,8 +149,6 @@ namespace PassManaAlpha.Core.Scurity
                 return null;
             }
         }
-
-        // ─── Async wrappers ───────────────────────────────────────────────────────
 
         public static async Task<string> EncryptAsync(string plainText, string password)
             => await Task.Run(() => Encrypt(plainText, password));

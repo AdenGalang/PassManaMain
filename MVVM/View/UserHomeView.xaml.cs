@@ -1,6 +1,6 @@
 using PassManaAlpha.Core;
 using PassManaAlpha.MVVM.Model;
-using System;
+using PassManaAlpha.MVVM.ViewModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -16,34 +16,42 @@ namespace PassManaAlpha.MVVM.View
             DataContextChanged += OnDataContextChanged;
         }
 
-        // ── Maid easter egg ──────────────────────────────────────────────────
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             kazusa.BeginAnimation(UIElement.OpacityProperty, null);
-            kazusa.Opacity = 1;
-            Storyboard sb = (Storyboard)FindResource("FadeOutStoryboard");
-            sb.Stop();
-            kazusa.Visibility = Visibility.Visible;
-            kazusa.Opacity = 1;
-            sb.Begin();
+            kazusa.Opacity = 0.5;
+            if (FindResource("FadeOutStoryboard") is Storyboard sb)
+            {
+                sb.Stop();
+                kazusa.Visibility = Visibility.Visible;
+                sb.Begin();
+            }
+
+            var vm = VaultManager;
+            if (vm != null)
+            {
+                vm.LockActiveVault();
+                VaultKeyBox?.Clear(); 
+
+                if (Application.Current.MainWindow?.DataContext is MainViewModel mainVm)
+                {
+                    mainVm.PasswordVM?.Entries?.Clear();
+                    mainVm.PasswordVM?.Log("Flush initiated. Memory buffers cleared.");
+                }
+            }
         }
 
-        // ── Vault card selection ─────────────────────────────────────────────
         private void VaultCard_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (sender is Border border && border.Tag is VaultInfo vault)
             {
                 VaultManager?.SelectVaultCommand.Execute(vault);
-
-                // Clear the key box so it matches the newly selected vault
                 VaultKeyBox.Clear();
             }
         }
 
-        // ── Inline key input ─────────────────────────────────────────────────
         private void VaultKeyBox_PasswordChanged(object sender, RoutedEventArgs e)
         {
-            // Live-update the in-memory key on the VaultInfo as the user types
             VaultManager?.SetInlineKey(VaultKeyBox.Password);
         }
 
@@ -56,13 +64,11 @@ namespace PassManaAlpha.MVVM.View
             vm.SelectedVault.IsUnlocked = !string.IsNullOrWhiteSpace(VaultKeyBox.Password);
         }
 
-        // ── DataContext helper ───────────────────────────────────────────────
         private VaultManagerViewModel? VaultManager =>
             (DataContext as PassManaAlpha.MVVM.ViewModel.HomeViewModel)?.VaultManager;
 
         private void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            // Clear key box whenever the whole DataContext is swapped (navigation)
             VaultKeyBox?.Clear();
         }
     }

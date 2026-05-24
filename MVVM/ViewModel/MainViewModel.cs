@@ -17,8 +17,15 @@ namespace PassManaAlpha.MVVM.ViewModel
         public object CurrentView
         {
             get => _currentView;
-            set { _currentView = value; OnPropertyChanged(); }
+            set
+            {
+                _currentView = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(CurrentViewTypeName));
+            }
         }
+
+        public string CurrentViewTypeName => CurrentView?.GetType().Name ?? string.Empty;
 
         public string WindowTitle =>
             HomeVM?.VaultManager.SelectedVault?.Name is string name
@@ -34,10 +41,11 @@ namespace PassManaAlpha.MVVM.ViewModel
                     OnPropertyChanged(nameof(WindowTitle));
             };
 
-            SettingsVM = new SettingsViewModel();
             PasswordVM = new PasswordViewModel(vaultManager);
+            SettingsVM = new SettingsViewModel(PasswordVM, vaultManager);
             HomeVM = new HomeViewModel(PasswordVM, vaultManager);
             AboutVM = new AboutViewModel();
+
             _currentView = HomeVM;
 
             HomeViewCommand = new RelayCommand(o => CurrentView = HomeVM);
