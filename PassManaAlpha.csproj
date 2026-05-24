@@ -1,0 +1,59 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+	  <NoWarn>$(NoWarn);NU1701</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="MVVM\View\PasswordView%28old%29.xaml.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="assets\Home.jpg" />
+    <None Remove="assets\kazusa_L2D.mp4" />
+    <None Remove="assets\kazusa_r.jpg" />
+    <None Remove="assets\nekoma.png" />
+    <None Remove="kazusa_r.jpg" />
+    <None Remove="MVVM\View\G4WM6CEbAAAyq4R.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Remove="MVVM\View\PasswordView%28old%29.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="assets\kazusa_L2D.mp4">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Font\" />
+    <Folder Include="MVVM\Converters\" />
+    <Folder Include="Services\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageReference Include="Isopoh.Cryptography.Argon2" Version="2.0.0" />
+    <PackageReference Include="MahApps.Metro.IconPacks" Version="6.2.1" />
+    <PackageReference Include="MaterialDesignThemes" Version="5.2.1" />
+    <PackageReference Include="ModernWPF" Version="1.4.6" />
+	<Reference Include="Microsoft.VisualBasic" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="assets\Home.jpg" />
+    <Resource Include="assets\kazusa_r.jpg" />
+    <Resource Include="assets\nekoma.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="kazusa_r.jpg" />
+    <Resource Include="MVVM\View\G4WM6CEbAAAyq4R.png" />
+  </ItemGroup>
+</Project>
